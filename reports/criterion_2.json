@@ -1,0 +1,6 @@
+{
+  "criterion": 2,
+  "name": "Autonomy earned, and revoked",
+  "passed": true,
+  "evidence": "budget 0 below 30 clean decisions; 94.7% of ceiling at 400; breaker returns it to \u20b90.00 after 3 confirmed failures, and recovery needs 50 clean decisions rather than elapsed time"
+}

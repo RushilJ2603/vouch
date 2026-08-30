@@ -1,0 +1,64 @@
+# Three services, two named volumes (§6.1, §6.3).
+# Source and config are bind-mounted read-only for live reload during the
+# five-week build; ALL mutable state lives in the named volumes, so a
+# `docker compose down -v` is the only thing that loses data.
+services:
+  proxy:
+    build: .
+    command: ["uvicorn", "vouch.proxy.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - data:/data
+      - artifacts:/artifacts
+      - ./src/vouch:/app/src/vouch:ro
+      - ./config:/app/config:ro
+    working_dir: /app
+    environment:
+      - VOUCH_DB_PATH=/data/vouch.sqlite
+      - VOUCH_ORDERS_DB_PATH=/app/data/orders.sqlite
+      - VOUCH_ARTIFACT_ROOT=/artifacts
+      - PYTHONPATH=/app/src
+    env_file:
+      - path: .env
+        required: false
+
+  worker:
+    build: .
+    command: ["sh", "-c", "python -m vouch.worker --as-of $$(date +%s)"]
+    volumes:
+      - data:/data
+      - artifacts:/artifacts
+      - ./src/vouch:/app/src/vouch:ro
+      - ./config:/app/config:ro
+    working_dir: /app
+    environment:
+      - VOUCH_DB_PATH=/data/vouch.sqlite
+      - VOUCH_ARTIFACT_ROOT=/artifacts
+      - PYTHONPATH=/app/src
+
+  dashboard:
+    build: .
+    command: ["python", "scripts/run_showcase.py", "--host", "0.0.0.0"]
+    ports:
+      - "8501:8501"
+    volumes:
+      - data:/data
+      - artifacts:/artifacts:ro
+      - ./src/vouch:/app/src/vouch:ro
+      - ./config:/app/config:ro
+      - ./dashboard:/app/dashboard:ro
+    working_dir: /app
+    environment:
+      - VOUCH_DB_PATH=/data/vouch.sqlite
+      - VOUCH_ORDERS_DB_PATH=/data/orders.sqlite
+      - VOUCH_DATA_ROOT=/data
+      - VOUCH_ARTIFACT_ROOT=/artifacts
+      - PYTHONPATH=/app/src
+    env_file:
+      - path: .env
+        required: false
+
+volumes:
+  data:
+  artifacts:

@@ -1,0 +1,65 @@
+{
+  "feature_order": [
+    "verify_fail_frac",
+    "verify_n_claims",
+    "retrieval_support_min",
+    "retrieval_support_mean",
+    "tool_retry_count",
+    "tool_error_count",
+    "hedge_density",
+    "length_z",
+    "logprob_mean",
+    "logprob_min",
+    "pii_score",
+    "injection_score",
+    "policy_score",
+    "secret_score",
+    "judge_p_wrong"
+  ],
+  "capability_tier": "none",
+  "model_a_features": [
+    "verify_fail_frac",
+    "verify_n_claims",
+    "retrieval_support_min",
+    "retrieval_support_mean",
+    "tool_retry_count",
+    "tool_error_count",
+    "hedge_density",
+    "length_z",
+    "pii_score",
+    "injection_score",
+    "policy_score",
+    "secret_score"
+  ],
+  "model_b_features": [
+    "verify_fail_frac",
+    "verify_n_claims",
+    "retrieval_support_min",
+    "retrieval_support_mean",
+    "tool_retry_count",
+    "tool_error_count",
+    "hedge_density",
+    "length_z",
+    "pii_score",
+    "injection_score",
+    "policy_score",
+    "secret_score",
+    "judge_p_wrong"
+  ],
+  "sklearn_version": "1.9.0",
+  "ece_global": 0.017502665946427343,
+  "mce_global": 0.04794294418755878,
+  "brier_global": 0.006816924442801368,
+  "test_boundary_ts": 1718450498.6544294,
+  "n_train": 1172,
+  "n_test": 294,
+  "null_rates": {
+    "judge_p_wrong": 0.766,
+    "length_z": 0.0614,
+    "logprob_mean": 1.0,
+    "logprob_min": 1.0
+  },
+  "fallback_priors": {
+    "issue_refund": 0.038881
+  }
+}

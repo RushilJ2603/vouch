@@ -1,0 +1,24 @@
+# ── actions.yaml ───────────────────────────────────────────────────────────
+# Per-action risk surface (§8). An action NOT in this file has no exposure and
+# therefore no price, so it is BLOCKed. Fail closed. This is the single most
+# likely cause of "Vouch is refusing everything" during integration.
+# ---------------------------------------------------------------------------
+
+issue_refund:
+  amount_field:   action.amount_paise
+  reversibility:  0.30        # ~70% recoverable if wrong
+  visibility:     1.20        # customer-facing, reputational premium
+  blast_radius:   1.00        # one customer record
+  hard_limit:     200000      # ₹ — closes the top band, and is an invariant (§10.2)
+  horizon_sec:    2592000     # 30 days — chargebacks land late
+  invariants:     [no_pii_egress, within_authorisation_scope, no_secrets_in_output]
+
+send_bulk_email:
+  amount_field:   null        # no rupee amount at all
+  base_amount:    500         # notional cost per recipient of getting it wrong
+  reversibility:  0.95        # essentially irreversible once sent
+  visibility:     2.00
+  blast_radius:   recipient_count       # ← where bulk actions get expensive
+  hard_limit:     50000
+  horizon_sec:    86400
+  invariants:     [no_pii_egress, no_secrets_in_output]

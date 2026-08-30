@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4f5fb">
+<title>Vouch | Enterprise AI Control Plane</title>
+<meta name="description" content="Vouch is a real-time control layer that lets enterprise AI earn autonomy from measured outcomes.">
+<style>
+:root {
+  --canvas:#f4f5fb;
+  --paper:#ffffff;
+  --paper-soft:#f9faff;
+  --ink:#101633;
+  --muted:#5d6480;
+  --line:#dde1ee;
+  --line-strong:#cbd1e3;
+  --indigo:#5c4cf2;
+  --indigo-dark:#392cc8;
+  --indigo-soft:#eeecff;
+  --teal:#087f74;
+  --teal-soft:#e7f7f3;
+  --orange:#c45a16;
+  --orange-soft:#fff0e5;
+  --red:#b9384f;
+  --shadow:0 18px 45px rgba(32,39,86,.09);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:
+    radial-gradient(circle at 85% 4%,rgba(92,76,242,.09),transparent 24rem),
+    radial-gradient(circle at 8% 25%,rgba(8,127,116,.06),transparent 22rem),
+    var(--canvas);
+  color:var(--ink);font:400 16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit}
+a{color:inherit}
+::selection{background:var(--indigo);color:white}
+:focus-visible{outline:3px solid rgba(92,76,242,.35);outline-offset:3px}
+.shell{width:min(1180px,calc(100% - 40px));margin:auto}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;margin:0 0 18px;color:var(--indigo-dark);
+  font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+}
+.eyebrow:before{content:"";width:24px;height:2px;background:var(--indigo)}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(47px,7vw,82px);line-height:.98;letter-spacing:-.064em;margin-bottom:24px;max-width:880px}
+h2{font-size:clamp(34px,4.4vw,54px);line-height:1.04;letter-spacing:-.045em;margin-bottom:18px}
+h3{font-size:20px;line-height:1.2;letter-spacing:-.022em;margin-bottom:10px}
+.lead{font-size:clamp(18px,2vw,22px);line-height:1.55;color:var(--muted);max-width:710px}
+.section-head{max-width:760px;margin-bottom:42px}
+
+/* Navigation */
+.nav-wrap{position:sticky;top:0;z-index:50;padding:14px 0;background:rgba(244,245,251,.82);backdrop-filter:blur(16px)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:22px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:850;font-size:20px;letter-spacing:-.03em}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--indigo);color:white;box-shadow:0 7px 16px rgba(92,76,242,.24)}
+.brand-mark svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.nav-links{display:flex;align-items:center;gap:27px;color:var(--muted);font-size:14px;font-weight:650}
+.nav-links a{text-decoration:none}
+.nav-links a:hover{color:var(--ink)}
+.live-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--paper);border:1px solid var(--line);border-radius:999px;color:var(--teal);font-size:12px;font-weight:800}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#18a98f;box-shadow:0 0 0 5px rgba(24,169,143,.12)}
+
+/* Hero */
+.hero{padding:82px 0 62px}
+.hero-copy{position:relative}
+.hero h1 span{color:var(--indigo)}
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:32px}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;border-radius:12px;text-decoration:none;font-weight:750;border:1px solid transparent}
+.button.primary{background:var(--ink);color:white;box-shadow:0 10px 25px rgba(16,22,51,.18)}
+.button.secondary{background:rgba(255,255,255,.68);border-color:var(--line);color:var(--ink)}
+.button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-proof{display:grid;grid-template-columns:repeat(4,1fr);margin-top:68px;background:rgba(255,255,255,.72);border:1px solid rgba(203,209,227,.8);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.proof-item{padding:25px 26px;border-right:1px solid var(--line)}
+.proof-item:last-child{border-right:0}
+.proof-value{display:block;font-size:29px;font-weight:850;line-height:1.1;letter-spacing:-.04em}
+.proof-label{display:block;margin-top:7px;color:var(--muted);font-size:13px}
+
+/* General sections */
+section.block{padding:92px 0}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.route-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.route-card{display:flex;align-items:center;gap:15px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.72)}
+.route-symbol{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;font-size:18px;font-weight:900}
+.route-symbol.release{background:var(--teal-soft);color:var(--teal)}.route-symbol.check{background:var(--indigo-soft);color:var(--indigo)}.route-symbol.human{background:var(--orange-soft);color:var(--orange)}
+.route-card strong{display:block;font-size:16px}.route-card span:last-child{display:block;color:var(--muted);font-size:12px}
+
+/* Decision room */
+.decision-layout{display:grid;grid-template-columns:320px minmax(0,1fr);overflow:hidden}
+.decision-menu{padding:28px;border-right:1px solid var(--line);background:var(--paper-soft)}
+.decision-menu h3{margin-bottom:5px}
+.decision-menu>p{font-size:13px;color:var(--muted);margin-bottom:23px}
+.mode-switch{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:5px;margin-bottom:24px;border:1px solid var(--line);border-radius:13px;background:white}
+.mode-switch button{border:0;border-radius:9px;padding:9px 8px;background:transparent;color:var(--muted);font-size:12px;font-weight:800;cursor:pointer}
+.mode-switch button.active[data-mode="release"]{background:var(--teal-soft);color:var(--teal)}
+.mode-switch button.active[data-mode="check_harder"]{background:var(--indigo-soft);color:var(--indigo)}
+.mode-switch button.active[data-mode="human_control"]{background:var(--orange-soft);color:var(--orange)}
+.case-list{display:grid;gap:9px}
+.case-button{width:100%;border:1px solid transparent;border-radius:13px;padding:13px 14px;background:transparent;text-align:left;color:var(--ink);cursor:pointer}
+.case-button:hover{background:white;border-color:var(--line)}
+.case-button.active{background:white;border-color:var(--line-strong);box-shadow:0 7px 18px rgba(32,39,86,.07)}
+.case-title{display:block;font-size:13px;font-weight:780;text-transform:capitalize}
+.case-meta{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+.decision-stage{padding:34px 38px 38px;min-height:520px;display:flex;flex-direction:column}
+.stage-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:28px}
+.verdict{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border-radius:999px;font-size:12px;font-weight:850}
+.verdict.released{background:var(--teal-soft);color:var(--teal)}
+.verdict.check{background:var(--indigo-soft);color:var(--indigo)}
+.verdict.held{background:var(--orange-soft);color:var(--orange)}
+.verdict svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.turn-id{color:var(--muted);font:650 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.customer{position:relative;padding:18px 20px;margin:0 44px 18px 0;border:1px solid var(--line);border-radius:15px 15px 15px 4px;background:var(--paper-soft);font-size:15px}
+.customer:before{content:"Customer";display:block;margin-bottom:7px;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.agent{position:relative;padding:20px 22px;margin:0 0 30px 44px;border-radius:15px 15px 4px 15px;background:var(--ink);color:white;font-size:16px;line-height:1.6}
+.agent:before{content:"AI agent";display:block;margin-bottom:7px;color:#bfc5df;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.decision-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:auto}
+.fact{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--paper-soft)}
+.fact-label{display:block;color:var(--muted);font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.06em}
+.fact-value{display:block;margin-top:5px;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.decision-reason{margin:16px 0 0;padding:14px 16px;border-left:3px solid var(--indigo);background:var(--indigo-soft);color:#3d376b;font-size:13px;border-radius:0 10px 10px 0}
+
+/* Live control lab */
+.live-lab{margin-top:24px;overflow:hidden}
+.lab-head{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:25px 28px;border-bottom:1px solid var(--line);background:var(--paper-soft)}
+.lab-head h3{margin:0}.lab-head p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.provider-route{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-weight:750}
+.provider-route b{color:var(--ink)}
+.lab-body{display:grid;grid-template-columns:360px minmax(0,1fr)}
+.lab-controls{padding:26px;border-right:1px solid var(--line)}
+.control-label{display:block;margin-bottom:10px;color:var(--muted);font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.scenario-select{display:grid;gap:8px;margin-bottom:24px}
+.scenario-choice{border:1px solid var(--line);border-radius:13px;padding:13px 14px;background:white;text-align:left;cursor:pointer}
+.scenario-choice.active{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(92,76,242,.1)}
+.scenario-choice strong{display:block;font-size:13px}.scenario-choice span{display:block;margin-top:3px;color:var(--muted);font-size:11px;text-transform:capitalize}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:22px}
+.mode-choice{border:1px solid var(--line);border-radius:11px;padding:10px 7px;background:var(--paper-soft);color:var(--muted);cursor:pointer;font-size:11px;font-weight:800}
+.mode-choice.active{background:var(--indigo-soft);border-color:#c8c1ff;color:var(--indigo-dark)}
+.run-live{width:100%;border:0;border-radius:12px;padding:14px 16px;background:var(--indigo);color:white;font-weight:850;cursor:pointer;box-shadow:0 10px 23px rgba(92,76,242,.23)}
+.run-live:disabled{cursor:wait;opacity:.64}
+.mode-note{min-height:52px;margin:0 0 16px;color:var(--muted);font-size:12px}
+.lab-result{padding:30px;min-height:455px;background:linear-gradient(145deg,#fff,#fafaff)}
+.pipeline{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:7px;margin-bottom:27px}
+.pipe-step{padding:12px 8px;border:1px solid var(--line);border-radius:12px;background:white;text-align:center;color:var(--muted);font-size:11px;font-weight:780}
+.pipe-step.active{border-color:#bbb3ff;background:var(--indigo-soft);color:var(--indigo-dark)}
+.pipe-step.done{border-color:#a9dcd4;background:var(--teal-soft);color:var(--teal)}
+.pipe-arrow{color:#a2a8bd}
+.result-placeholder{display:grid;place-items:center;min-height:290px;text-align:center;color:var(--muted)}
+.result-placeholder strong{display:block;color:var(--ink);font-size:20px;margin-bottom:8px}
+.live-result-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.live-reply{padding:18px 20px;border-radius:14px;background:var(--ink);color:white;line-height:1.6}
+.live-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:15px}
+.live-metric{padding:12px;border:1px solid var(--line);border-radius:12px;background:white}
+.live-metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.05em}
+.live-metric strong{display:block;margin-top:4px;font-size:14px}
+.route-banner{margin-top:14px;padding:13px 15px;border-radius:11px;background:var(--indigo-soft);color:#3d376b;font-size:12px}
+.live-error{padding:18px;border-radius:13px;background:var(--orange-soft);color:#803c11}
+
+/* Profiles */
+.profiles{display:grid;grid-template-columns:350px minmax(0,1fr);gap:24px}
+.profile-tabs{display:grid;gap:12px}
+.profile-tab{border:1px solid var(--line);border-radius:16px;padding:20px;background:rgba(255,255,255,.68);color:var(--ink);text-align:left;cursor:pointer;transition:.2s ease}
+.profile-tab:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+.profile-tab.active{background:var(--ink);color:white;border-color:var(--ink);box-shadow:0 14px 30px rgba(16,22,51,.16)}
+.profile-tab span{display:block;margin-top:5px;color:var(--muted);font-size:13px}
+.profile-tab.active span{color:#bec4dc}
+.profile-detail{padding:38px}
+.profile-kicker{color:var(--indigo);font-size:12px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+.profile-detail h3{font-size:31px;margin:7px 0 11px}
+.profile-desc{max-width:650px;color:var(--muted);font-size:16px}
+.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px}
+.profile-card{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--paper-soft)}
+.profile-card small{display:block;margin-bottom:10px;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.07em}
+.profile-card strong{font-size:14px;line-height:1.45}
+.ladder{display:flex;gap:7px;align-items:center;margin-top:27px;overflow:auto;padding-bottom:4px}
+.ladder-step{white-space:nowrap;padding:9px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;font-weight:750}
+.ladder-step.on{background:var(--indigo-soft);border-color:#cfc9ff;color:var(--indigo-dark)}
+.arrow{color:#a1a8bf}
+
+/* Loop */
+.loop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.loop-card{padding:25px;min-height:235px;background:var(--paper);border:1px solid var(--line);border-radius:18px}
+.loop-icon{display:grid;place-items:center;width:46px;height:46px;margin-bottom:28px;border-radius:14px;background:var(--indigo-soft);color:var(--indigo)}
+.loop-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.loop-card p{color:var(--muted);font-size:14px;margin-bottom:0}
+
+/* Evidence */
+.evidence-panel{padding:40px;background:var(--ink);color:white;border:0;box-shadow:0 24px 60px rgba(16,22,51,.2)}
+.evidence-head{display:flex;align-items:end;justify-content:space-between;gap:28px;margin-bottom:36px}
+.evidence-head h2{margin-bottom:0;max-width:690px}
+.evidence-head p{color:#bfc5df;max-width:300px;margin:0}
+.evidence-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #343b5d;border-left:1px solid #343b5d}
+.evidence-item{padding:28px;border-right:1px solid #343b5d;border-bottom:1px solid #343b5d;min-height:160px}
+.evidence-item strong{display:block;font-size:34px;line-height:1.1;letter-spacing:-.045em}
+.evidence-item span{display:block;color:#bfc5df;font-size:13px;margin-top:10px}
+.evidence-item em{display:inline-block;margin-top:16px;color:#7ee0ce;font-size:11px;font-style:normal;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+
+/* Architecture */
+.architecture{display:grid;grid-template-columns:1fr auto 1.1fr auto 1fr;align-items:stretch;gap:14px}
+.arch-card{padding:24px;border:1px solid var(--line);border-radius:18px;background:var(--paper)}
+.arch-card.center{border-color:#cfc9ff;background:linear-gradient(150deg,#f7f5ff,#fff)}
+.arch-card .tag{color:var(--indigo);font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.arch-card ul{list-style:none;padding:0;margin:18px 0 0;color:var(--muted);font-size:13px}
+.arch-card li{padding:8px 0;border-top:1px solid var(--line)}
+.arch-arrow{align-self:center;color:var(--indigo);font-size:24px;font-weight:400}
+
+/* CTA/footer */
+.cta{padding:58px;display:flex;align-items:center;justify-content:space-between;gap:35px;background:linear-gradient(135deg,var(--indigo),#7468fa);color:white;border-radius:28px;box-shadow:0 22px 55px rgba(92,76,242,.24)}
+.cta h2{max-width:700px;margin-bottom:10px}
+.cta p{margin:0;color:#e2dfff}
+.cta .button{background:white;color:var(--indigo-dark);white-space:nowrap}
+footer{padding:35px 0 46px;color:var(--muted);font-size:13px}
+.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding-top:24px}
+.footer-row b{color:var(--ink)}
+.loading{padding:70px;text-align:center;color:var(--muted)}
+
+@media(max-width:900px){
+  .nav-links a{display:none}.hero-proof{grid-template-columns:1fr 1fr}.proof-item:nth-child(2){border-right:0}.proof-item:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .decision-layout,.profiles,.lab-body{grid-template-columns:1fr}.decision-menu,.lab-controls{border-right:0;border-bottom:1px solid var(--line)}
+  .case-list{grid-template-columns:repeat(3,1fr)}.profile-grid{grid-template-columns:1fr}.loop-grid{grid-template-columns:1fr 1fr}
+  .evidence-grid{grid-template-columns:1fr 1fr}.architecture{grid-template-columns:1fr}.arch-arrow{transform:rotate(90deg);justify-self:center}
+}
+@media(max-width:620px){
+  .shell{width:min(100% - 26px,1180px)}.nav-wrap{padding:10px 0}.live-chip{padding:7px 9px}.hero{padding:55px 0 42px}
+  h1{font-size:45px}.hero-proof{grid-template-columns:1fr}.proof-item{border-right:0;border-bottom:1px solid var(--line)}.proof-item:last-child{border-bottom:0}
+  section.block{padding:68px 0}.decision-menu,.decision-stage,.profile-detail{padding:22px}.case-list{grid-template-columns:1fr}.customer{margin-right:12px}.agent{margin-left:12px}
+  .decision-facts,.loop-grid,.evidence-grid,.live-metrics,.route-summary{grid-template-columns:1fr}.evidence-head,.cta,.footer-row,.lab-head{align-items:flex-start;flex-direction:column}.cta{padding:34px 26px}.pipeline{grid-template-columns:1fr}.pipe-arrow{transform:rotate(90deg);justify-self:center}
+}
+</style>
+</head>
+<body>
+<div class="nav-wrap">
+  <nav class="shell" aria-label="Primary navigation">
+    <a class="brand" href="#top" aria-label="Vouch home">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+      Vouch
+    </a>
+    <div class="nav-links">
+      <a href="#decisions">Live decisions</a>
+      <a href="#policies">Policy profiles</a>
+      <a href="#evidence">Evidence</a>
+      <span class="live-chip"><span class="live-dot"></span>Control plane live</span>
+    </div>
+  </nav>
+</div>
+
+<main id="top">
+  <section class="hero">
+    <div class="shell hero-copy">
+      <p class="eyebrow">ControlPlane.ai · Responsible AI infrastructure</p>
+      <h1>Enterprise AI that <span>earns the right</span> to act.</h1>
+      <p class="lead">Vouch checks every response, prices the consequence of every action, and expands autonomy only where measured outcomes justify it.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#decisions">Enter the decision room <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="button secondary" href="#how">See the control loop</a>
+      </div>
+      <div class="hero-proof" id="hero-proof" aria-live="polite">
+        <div class="loading">Loading measured evidence…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="decisions">
+    <div class="shell">
+      <div class="section-head">
+        <p class="eyebrow">Live decision room</p>
+        <h2>One response. One action. One accountable decision.</h2>
+        <p class="lead">Inspect real model replies and see where Vouch released the agent or kept a person in control.</p>
+      </div>
+      <div class="route-summary" id="route-summary"></div>
+      <div class="panel decision-layout" id="decision-room">
+        <div class="loading">Reading the decision ledger…</div>
+      </div>
+      <div class="panel live-lab" id="live-lab">
+        <div class="lab-head">
+          <div><h3>Run the control plane live</h3><p>Generate a fresh structured response, evaluate it, and watch the route resolve.</p></div>
+          <div class="provider-route" id="provider-route"><b>DeepSeek</b><span>→</span><b>Vouch</b><span>→</span><b>GLM when selected</b></div>
+        </div>
+        <div class="lab-body">
+          <div class="lab-controls" id="lab-controls"><div class="loading">Loading live routes…</div></div>
+          <div class="lab-result" id="lab-result">
+            <div class="result-placeholder"><div><strong>Ready for a live decision</strong>Select a route and verification mode, then run it.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="policies">
+    <div class="shell">
+      <div class="section-head">
+        <p class="eyebrow">Policy profiles</p>
+        <h2>Control that changes with the job.</h2>
+        <p class="lead">Different enterprise use cases carry different risks, checks and response paths. Vouch keeps the mechanism consistent while policy stays configurable.</p>
+      </div>
+      <div class="profiles">
+        <div class="profile-tabs" id="profile-tabs"></div>
+        <div class="panel profile-detail" id="profile-detail"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="shell">
+      <div class="section-head">
+        <p class="eyebrow">The control loop</p>
+        <h2>From model output to earned autonomy.</h2>
+        <p class="lead">Checks run around the model call, decisions stay explainable, and every verified outcome improves what the system can safely delegate next.</p>
+      </div>
+      <div class="loop-grid">
+        <article class="loop-card">
+          <div class="loop-icon"><svg viewBox="0 0 24 24"><path d="M4 12s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"/><circle cx="12" cy="12" r="2.4"/></svg></div>
+          <h3>Sense</h3><p>Check grounding, policy, privacy, injection risk and structured claims while the model responds.</p>
+        </article>
+        <article class="loop-card">
+          <div class="loop-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7.2h7a3 3 0 010 6H10a3 3 0 000 6h7"/></svg></div>
+          <h3>Price</h3><p>Combine calibrated wrongness with action value, reversibility, visibility and blast radius.</p>
+        </article>
+        <article class="loop-card">
+          <div class="loop-icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3 8-8 9-5-1-8-4-8-9V7z"/><path d="M8.5 12l2.2 2.2 4.8-5"/></svg></div>
+          <h3>Decide</h3><p>Allow, edit, check harder, review or block by comparing expected loss with authority already earned.</p>
+        </article>
+        <article class="loop-card">
+          <div class="loop-icon"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 5v6h-6"/></svg></div>
+          <h3>Learn</h3><p>Write the full audit record and turn confirmed outcomes into more or less authority for that exact task.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="evidence">
+    <div class="shell">
+      <div class="panel evidence-panel">
+        <div class="evidence-head">
+          <h2>Measured evidence behind every claim.</h2>
+          <p>Computed from the committed corpus, calibrator artifacts and decision ledger.</p>
+        </div>
+        <div class="evidence-grid" id="evidence-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="shell">
+      <div class="section-head">
+        <p class="eyebrow">Deployment architecture</p>
+        <h2>A control plane, not another AI application.</h2>
+        <p class="lead">Vouch sits between enterprise agents and the systems they can affect, with a fast request path and a separate evidence-learning path.</p>
+      </div>
+      <div class="architecture">
+        <article class="arch-card"><span class="tag">Enterprise AI</span><h3>Any model or agent</h3><ul><li>Customer support</li><li>Internal knowledge</li><li>Decision support</li></ul></article>
+        <div class="arch-arrow" aria-hidden="true">→</div>
+        <article class="arch-card center"><span class="tag">Vouch control plane</span><h3>Inspect · price · decide</h3><ul><li>Fast deterministic verification</li><li>Parallel risk sensors</li><li>Escalated AI judge</li><li>Per-task trust ledger</li></ul></article>
+        <div class="arch-arrow" aria-hidden="true">→</div>
+        <article class="arch-card"><span class="tag">Enterprise systems</span><h3>Governed outcomes</h3><ul><li>Tools and workflows</li><li>Human review queue</li><li>Immutable audit trail</li></ul></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="shell">
+      <div class="cta">
+        <div><h2>Give AI room to move without losing control.</h2><p>Start in shadow mode. Measure outcomes. Expand authority where the record earns it.</p></div>
+        <a class="button" href="#decisions">Explore live decisions</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="shell footer-row"><span><b>Vouch</b> · ControlPlane.ai</span><span>Team Velocity Gate · Accenture Innovation Challenge</span></div>
+</footer>
+
+<script>
+const number = new Intl.NumberFormat("en-IN");
+const money = value => "₹" + number.format(Math.round(Number(value || 0)));
+const percent = value => `${(Number(value || 0) * 100).toFixed(1)}%`;
+const safe = value => String(value ?? "").replace(/[&<>\"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[char]));
+const icon = kind => kind === "released"
+  ? '<svg viewBox="0 0 20 20"><path d="M3.5 10.5l4 4L16.5 5.8"/></svg>'
+  : '<svg viewBox="0 0 20 20"><path d="M10 2.5l7.5 14H2.5zM10 7v4.5M10 14h.01"/></svg>';
+
+const profiles = [
+  {
+    name:"Customer support", subtitle:"Live, action-aware control", posture:"Balanced autonomy",
+    description:"Resolve routine requests immediately while putting expensive, irreversible or weakly grounded actions behind review.",
+    checks:"Grounding · Policy · Privacy", latency:"Checks overlap generation", authority:"Per action and value band",
+    ladder:["Allow","Edit","Check harder","Human review","Block"]
+  },
+  {
+    name:"Internal knowledge", subtitle:"Fast, read-oriented assurance", posture:"Evidence-first answers",
+    description:"Keep employee answers traceable to governed sources, remove sensitive data, and route unsupported claims for correction before delivery.",
+    checks:"Source support · PII · Injection", latency:"Fast path by default", authority:"Per domain and source set",
+    ladder:["Allow","Edit","Human review","Block"]
+  },
+  {
+    name:"Decision support", subtitle:"High-stakes review posture", posture:"Human accountability",
+    description:"Apply stricter verification to recommendations that can affect people, money or regulated decisions, with explicit human ownership.",
+    checks:"Bias · Grounding · Policy · PII", latency:"Accuracy-prioritized", authority:"Per decision class and region",
+    ladder:["Allow","Check harder","Human review","Block"]
+  }
+];
+
+let state;
+let mode = "release";
+let caseIndex = 0;
+let liveScenario = 0;
+let liveMode = "adaptive";
+
+function renderProof(data){
+  const split=data.split, earned=data.earned;
+  const items=[
+    [number.format(split.released.n),"responses released autonomously"],
+    [number.format(split.released.action_n),"refund actions executed"],
+    [number.format(split.released.wrong_action_n),"known-wrong refunds released"],
+    [earned?.p50_added_ms != null ? `${earned.p50_added_ms.toFixed(0)} ms` : "Not measured","median control latency"]
+  ];
+  document.getElementById("hero-proof").innerHTML=items.map(([v,l])=>`<div class="proof-item"><strong class="proof-value">${safe(v)}</strong><span class="proof-label">${safe(l)}</span></div>`).join("");
+}
+
+function renderRoutes(data){
+  const r=data.routes||{};
+  const routes=[
+    ["release","✓","Release",`${number.format(r.release||0)} fast-path decisions`],
+    ["check","↗","Check harder",`${number.format(r.check_harder||0)} routed to deeper verification`],
+    ["human","◇","Human control",`${number.format(r.human_control||0)} retained for a person`]
+  ];
+  document.getElementById("route-summary").innerHTML=routes.map(([c,s,t,d])=>`<div class="route-card"><span class="route-symbol ${c}">${s}</span><span><strong>${t}</strong><span>${d}</span></span></div>`).join("");
+}
+
+function renderDecisionRoom(){
+  const routes=state.decision_routes||{};
+  const collection=routes[mode]||{n:0,examples:[]};
+  const examples=collection.examples || [];
+  caseIndex=Math.min(caseIndex,Math.max(examples.length-1,0));
+  const e=examples[caseIndex];
+  if(!e){document.getElementById("decision-room").innerHTML='<div class="loading">No decisions are available.</div>';return;}
+  const action={issue_refund:"Refund",no_action:"No action",escalate:"Escalation"}[e.action] || e.action || "Response";
+  const routeCopy={
+    release:{verdict:"Released autonomously",css:"released",control:"Agent executed",reason:"Expected loss stayed within the authority this agent had earned for the task."},
+    check_harder:{verdict:"Checked harder",css:"check",control:"Tier 2 verifies",reason:"The first decision landed near the authority boundary, so Vouch requested deeper verification before resolving it."},
+    human_control:{verdict:"Human control retained",css:"held",control:"Person decides",reason:"Expected loss exceeded earned authority, so the proposed action remained behind human approval."}
+  };
+  const current=routeCopy[mode]||routeCopy.release;
+  document.getElementById("decision-room").innerHTML=`
+    <aside class="decision-menu">
+      <h3>Decision stream</h3><p>${number.format(collection.n)} outcomes in this route</p>
+      <div class="mode-switch" role="tablist" aria-label="Decision route">
+        <button data-mode="release" class="${mode==="release"?"active":""}" role="tab" aria-selected="${mode==="release"}">Release</button>
+        <button data-mode="check_harder" class="${mode==="check_harder"?"active":""}" role="tab" aria-selected="${mode==="check_harder"}">Check harder</button>
+        <button data-mode="human_control" class="${mode==="human_control"?"active":""}" role="tab" aria-selected="${mode==="human_control"}">Human</button>
+      </div>
+      <div class="case-list">${examples.map((x,i)=>`<button class="case-button ${i===caseIndex?"active":""}" data-case="${i}"><span class="case-title">${safe((x.scenario||"decision").replaceAll("_"," "))}</span><span class="case-meta">${safe(({issue_refund:"Refund proposed",no_action:"No action",escalate:"Escalated"}[x.action]||x.action||"Response"))}${x.amount?` · ${money(x.amount)}`:""}</span></button>`).join("")}</div>
+    </aside>
+    <article class="decision-stage">
+      <div class="stage-top"><span class="verdict ${current.css}">${icon(current.css)}${current.verdict}</span><span class="turn-id">${safe(e.turn_id)}</span></div>
+      ${e.customer?`<p class="customer">${safe(e.customer)}</p>`:""}
+      <p class="agent">${safe(e.reply)}</p>
+      <div class="decision-facts">
+        <div class="fact"><span class="fact-label">Action</span><strong class="fact-value">${safe(action)}${e.amount?` · ${money(e.amount)}`:""}</strong></div>
+        <div class="fact"><span class="fact-label">Probability of error</span><strong class="fact-value">${e.p_wrong==null?"Not measured":percent(e.p_wrong)}</strong></div>
+        <div class="fact"><span class="fact-label">Control route</span><strong class="fact-value">${current.control}</strong></div>
+      </div>
+      <p class="decision-reason">${current.reason}</p>
+    </article>`;
+  document.querySelectorAll("[data-mode]").forEach(button=>button.addEventListener("click",()=>{mode=button.dataset.mode;caseIndex=0;renderDecisionRoom();}));
+  document.querySelectorAll("[data-case]").forEach(button=>button.addEventListener("click",()=>{caseIndex=Number(button.dataset.case);renderDecisionRoom();}));
+}
+
+const modeCopy={
+  fast:"Uses more earned budget and skips the judge for the lowest added latency.",
+  adaptive:"Calls GLM only when the first decision is close enough to change.",
+  deep:"Uses a tighter budget and sends every meaningful side effect through GLM."
+};
+
+function renderLiveControls(){
+  const scenarios=state?.live_scenarios||[];
+  if(!scenarios.length){document.getElementById("lab-controls").innerHTML='<p class="mode-note">No live routes are available.</p>';return;}
+  liveScenario=Math.min(liveScenario,scenarios.length-1);
+  document.getElementById("lab-controls").innerHTML=`
+    <span class="control-label">Decision route</span>
+    <div class="scenario-select">${scenarios.map((s,i)=>`<button class="scenario-choice ${i===liveScenario?"active":""}" data-live-scenario="${i}"><strong>${safe(s.route)}</strong><span>${safe((s.scenario||"").replaceAll("_"," "))} · ${money(s.amount)}</span></button>`).join("")}</div>
+    <span class="control-label">Verification mode</span>
+    <div class="mode-grid">${["fast","adaptive","deep"].map(x=>`<button class="mode-choice ${x===liveMode?"active":""}" data-live-mode="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>
+    <p class="mode-note">${modeCopy[liveMode]}</p>
+    <button class="run-live" id="run-live">Run with DeepSeek + Vouch</button>`;
+  document.querySelectorAll("[data-live-scenario]").forEach(button=>button.addEventListener("click",()=>{liveScenario=Number(button.dataset.liveScenario);const suggested=scenarios[liveScenario].suggested_mode;if(suggested)liveMode=suggested;renderLiveControls();}));
+  document.querySelectorAll("[data-live-mode]").forEach(button=>button.addEventListener("click",()=>{liveMode=button.dataset.liveMode;renderLiveControls();}));
+  document.getElementById("run-live").addEventListener("click",runLive);
+}
+
+function pipeline(active=-1,done=-1,judge=true){
+  const steps=["DeepSeek agent","Fast checks",judge?"GLM judge":"Gate math","Final route"];
+  return `<div class="pipeline">${steps.map((x,i)=>`${i?'<span class="pipe-arrow">→</span>':""}<span class="pipe-step ${i<=done?"done":i===active?"active":""}">${x}</span>`).join("")}</div>`;
+}
+
+async function runLive(){
+  const scenario=state.live_scenarios[liveScenario];
+  const button=document.getElementById("run-live");
+  button.disabled=true;button.textContent="DeepSeek is responding…";
+  document.getElementById("lab-result").innerHTML=pipeline(0,-1,liveMode==="deep")+'<div class="result-placeholder"><div><strong>Fresh response in progress</strong>The server is generating structured claims and an action now.</div></div>';
+  try{
+    const response=await fetch("/api/live/evaluate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({scenario_id:scenario.scenario_id,policy_mode:liveMode})});
+    const payload=await response.json();
+    if(!response.ok)throw new Error(payload.detail||`Request failed with ${response.status}`);
+    const d=payload.vouch;
+    const verdictClass=d.verdict==="act"?"released":"held";
+    const verdictLabel={act:"Released autonomously",check_harder:"Checked harder",escalate:"Human review",block:"Blocked"}[d.verdict]||d.verdict;
+    const actionLabel={issue_refund:"Issue refund",no_action:"No action",escalate:"Escalate"}[payload.action.type]||payload.action.type;
+    const judgeRan=Boolean(payload.providers.judge);
+    const judgeAttempted=Boolean(payload.providers.judge_attempted);
+    const providerResult=judgeRan
+      ? `GLM returned · ${safe(d.tier2_trigger.replaceAll("_"," "))}`
+      : judgeAttempted ? "Verification fallback · human control retained" : "Fast path · no GLM call";
+    document.getElementById("lab-result").innerHTML=`${pipeline(-1,3,judgeAttempted)}
+      <div class="live-result-top"><span class="verdict ${verdictClass}">${icon(verdictClass)}${safe(verdictLabel)}</span><span class="turn-id">${safe(payload.providers.agent)}${judgeRan?` + ${safe(payload.providers.judge)}`:""}</span></div>
+      <p class="live-reply">${safe(payload.reply_text)}</p>
+      <div class="live-metrics">
+        <div class="live-metric"><span>Proposed action</span><strong>${safe(actionLabel)}${payload.action.amount_paise?` · ${money(payload.action.amount_paise/100)}`:""}</strong></div>
+        <div class="live-metric"><span>Error probability</span><strong>${percent(d.p_wrong)}</strong></div>
+        <div class="live-metric"><span>Expected loss / budget</span><strong>${money(d.expected_loss)} / ${money(d.budget)}</strong></div>
+        <div class="live-metric"><span>Control latency</span><strong>${Number(d.latency_ms).toFixed(0)} ms</strong></div>
+      </div>
+      <p class="route-banner"><b>${providerResult}.</b> ${safe(d.reason)}</p>`;
+  }catch(error){
+    document.getElementById("lab-result").innerHTML=`${pipeline(-1,-1,liveMode==="deep")}<div class="live-error"><b>Live run did not complete.</b><br>${safe(error.message)}</div>`;
+  }finally{renderLiveControls();}
+}
+
+function renderProfiles(active=0){
+  document.getElementById("profile-tabs").innerHTML=profiles.map((p,i)=>`<button class="profile-tab ${i===active?"active":""}" data-profile="${i}"><strong>${p.name}</strong><span>${p.subtitle}</span></button>`).join("");
+  const p=profiles[active];
+  document.getElementById("profile-detail").innerHTML=`<span class="profile-kicker">${p.posture}</span><h3>${p.name}</h3><p class="profile-desc">${p.description}</p><div class="profile-grid"><div class="profile-card"><small>Checks</small><strong>${p.checks}</strong></div><div class="profile-card"><small>Latency posture</small><strong>${p.latency}</strong></div><div class="profile-card"><small>Trust scope</small><strong>${p.authority}</strong></div></div><div class="ladder" aria-label="Response ladder">${p.ladder.map((x,i)=>`${i?'<span class="arrow">→</span>':""}<span class="ladder-step ${i<2?"on":""}">${x}</span>`).join("")}</div>`;
+  document.querySelectorAll("[data-profile]").forEach(button=>button.addEventListener("click",()=>renderProfiles(Number(button.dataset.profile))));
+}
+
+function renderEvidence(data){
+  const cal=data.calibration||{};
+  const items=[
+    [number.format(data.corpus.turns),"real model replies evaluated","DeepSeek corpus"],
+    [cal.ece!=null?cal.ece.toFixed(3):"Not measured","calibration error","probability aligned to outcomes"],
+    [money(data.split.released.value),"refund value released","under earned authority"],
+    [number.format(data.split.held.action_n),"refund actions retained for review","risk contained"],
+    [percent(data.split.released.share),"responses released","autonomy in this replay"],
+    [number.format(data.split.held.n),"responses held","human control retained"],
+    [number.format(data.bands.length),"value-sensitive risk bands","authority is task-specific"],
+    [money(data.constants.hard_limit),"hard action limit","never earnable"]
+  ];
+  document.getElementById("evidence-grid").innerHTML=items.map(([v,l,s])=>`<div class="evidence-item"><strong>${safe(v)}</strong><span>${safe(l)}</span><em>${safe(s)}</em></div>`).join("");
+}
+
+fetch("/api/state")
+  .then(response=>{if(!response.ok)throw new Error(`State endpoint returned ${response.status}`);return response.json();})
+  .then(data=>{state=data;renderProof(data);renderRoutes(data);renderDecisionRoom();renderLiveControls();renderEvidence(data);})
+  .catch(error=>{
+    document.getElementById("hero-proof").innerHTML=`<div class="loading">Decision state unavailable: ${safe(error.message)}</div>`;
+    document.getElementById("decision-room").innerHTML='<div class="loading">Decision stream unavailable.</div>';
+  });
+fetch("/api/live/status").then(r=>r.json()).then(status=>{
+  document.getElementById("provider-route").innerHTML=`<span class="live-dot"></span><b>${status.ready?"Providers ready":"Add provider keys"}</b><span>·</span><span>${safe(status.agent.model)} → Vouch → ${safe(status.judge.model)}</span>`;
+});
+renderProfiles();
+</script>
+</body>
+</html>

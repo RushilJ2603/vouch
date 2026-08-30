@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+*.pptx  binary
+*.pdf   binary
+*.png   binary
+*.jpeg  binary
+*.jpg   binary
+*.mp4   binary
+*.sqlite binary
+*.joblib binary
+*.onnx  binary

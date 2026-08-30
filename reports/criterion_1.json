@@ -1,0 +1,6 @@
+{
+  "criterion": 1,
+  "name": "Calibrated probability",
+  "passed": false,
+  "evidence": "global ECE 0.0232 (gate < 0.05); close_call n=35 (needs \u2265 100)"
+}

@@ -1,0 +1,92 @@
+# ── vouch.yaml ─────────────────────────────────────────────────────────────
+# Every tunable in one place. Loaded once at startup and hashed into the
+# configuration fingerprint (§9.4). Ranges and failure modes: Appendix B.
+# ---------------------------------------------------------------------------
+
+ledger:
+  z:                      1.96      # two-sided 95% — pinned; see §9.1
+  p_min:                  0.82
+  risk_appetite:          0.04      # ← the business dial (§5.1)
+  borrow_weight:          0.10
+  min_own_observations:   30
+  age_halflife_days:      90
+  trip_failures:          3
+  trip_window:            100
+  trip_window_sec:        86400
+  recover_clean:          50
+
+gate:
+  k:                      2.0
+  review_cost:            40.0
+
+drift:
+  bins:                   10
+  binning:                quantile
+  min_observations:       100       # below this → insufficient_data, no alarm
+  psi_short_threshold:    0.20
+  psi_long_threshold:     0.30
+  psi_drift_threshold:    0.25
+  reanchor_psi_long_max:  0.10
+
+sampling:
+  forced_review_rate:     0.0033    # ~1 in 300
+  shadow_mode:            false
+
+tier1:
+  flush_tokens:           32
+  pool_size:              4
+  onnx_root:              /artifacts/onnx
+
+# ── Model lock, 2026-08-24 ────────────────────────────────────────────────
+# Judge: GLM-4.7 (Z.ai), OpenAI-compatible endpoint. ONE model serves both the
+# offline judge (scripts/judge_corpus.py) and live Tier 2, because feature 15
+# `judge_p_wrong` is fitted from the former and served by the latter — two
+# models would be train/serve skew (§2.8).
+#
+# `thinking: disabled` is the DEFAULT, not a permanent ruling. GLM-4.7 is a
+# hybrid model, so enabling it is a one-line A/B on identical weights. The
+# reason for the default is calibration risk, not latency: feature 15 is a
+# PROBABILITY, and extended reasoning tends to sharpen stated confidence faster
+# than it improves accuracy. Measure at Demo 3 before changing it.
+#
+# CRITICAL: `model` and `thinking` both feed sensor_version() (§9.4). Flipping
+# either changes the feature-15 distribution, so it MUST change the fingerprint
+# or every trust row silently carries stale evidence forward.
+tier2:
+  provider:               zai
+  base_url:               "https://api.z.ai/api/paas/v4"
+  model:                  "glm-4.7"
+  thinking:               disabled  # disabled | enabled — part of model identity
+  timeout_sec:            2.0
+  max_reentry:            1
+
+# The agent under governance. The corpus generator and the explicit live-judge
+# route call it. Recorded here because model_id feeds the fingerprint (§9.4).
+agent:
+  provider:               deepseek
+  base_url:               "https://api.deepseek.com"
+  model:                  "deepseek-v4-flash"
+  thinking:               disabled
+  timeout_sec:            30.0
+  # Batch offline corpus runs OUTSIDE 06:30-09:30 and 11:30-15:30 IST, when
+  # DeepSeek charges peak rates (2x). Off-peak is the assumption in the ledger.
+
+calibration:
+  method:                 platt     # platt | isotonic
+  bins:                   10
+  binning:                quantile
+  split:                  [0.6, 0.2, 0.2]
+  ece_global_max:         0.05      # §3.4 criterion 1
+  ece_close_call_max:     0.08
+  promotion_min_region_n: 100
+  migrate_carry_max:      0.02      # §18.2
+  migrate_halve_max:      0.05
+
+proxy:
+  calibrator_poll_sec:    60
+  log_queue_max:          10000
+  spill_path:             /data/spill
+
+sensors:
+  tier0_version:          "t0-v1"
+  tier1_version:          "t1-v1"

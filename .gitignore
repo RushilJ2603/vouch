@@ -1,0 +1,27 @@
+# Secrets
+.env
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Runtime files
+data/*.sqlite-wal
+data/*.sqlite-shm
+data/demo03.sqlite
+reports/*.png
+
+# Export-time environments and generated models
+.venv-export/
+artifacts/onnx/
+artifacts/features_v1.jsonl
+
+# Local review output
+.impeccable/review/
+tmp/

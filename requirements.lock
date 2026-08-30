@@ -1,0 +1,51 @@
+# ── requirements.lock ──────────────────────────────────────────────────────
+# Week 1 task 1 (§2.5). Versions below the divider are the ones actually
+# resolved on the build machine (Python 3.12.3, SQLite 3.45.1). The two marked
+# "pin at bootstrap" are not installed here yet and must NOT be invented.
+#
+# sklearn's version is hard-checked at calibrator load (§2.8): a joblib fitted
+# under a different minor version loads without error and scores differently.
+# ---------------------------------------------------------------------------
+
+# Proxy
+fastapi==0.139.0
+uvicorn==0.50.0
+pydantic==2.13.4
+httpx==0.28.1
+
+# ML / calibration
+scikit-learn==1.9.0
+# Imported DIRECTLY by sensors/tier1.py to load feature 13's policy head at
+# serve time, so it is pinned rather than left to arrive with sklearn.
+joblib==1.5.3
+numpy==2.4.6
+pandas==2.3.3
+matplotlib==3.11.0
+onnxruntime==1.27.0
+
+# Tier 1 serving. An ONNX encoder cannot run without a tokenizer, and
+# _is_onnx_model_available() requires a model file AND this -- so without it a
+# fresh clone has no Tier 1 inference at all, and features 11-13 sit at
+# `unavailable` (which 10.2 then fails CLOSED, per section 16).
+# The standalone Rust tokenizer: its only dependency is huggingface-hub, so it
+# does NOT pull transformers or torch. That is what lets section 6.1 keep both
+# out of the serving image. Do not swap it for `transformers`.
+tokenizers==0.23.1
+
+# Config + IDs
+PyYAML==6.0.1
+
+# Test + lint
+# ruff is pinned because `make lint` used to fall back to
+# `|| echo "ruff not installed, skipped"`. Absent from this file, it was never
+# installed, so the lint half of `make test` silently passed on every fresh
+# clone. A gate that can no-op is not a gate.
+pytest==9.1.1
+ruff==0.16.4
+
+# ── Pin at bootstrap -- not yet installed on the build machine ─────────────
+# The model providers are BOTH OpenAI-compatible, so one SDK covers the agent
+# (DeepSeek) and the judge (Z.ai GLM). This replaces the `anthropic` SDK the
+# earlier drafts assumed; see the model lock in config/vouch.yaml.
+openai>=2.0,<3.0
+python-ulid>=3.0,<4.0

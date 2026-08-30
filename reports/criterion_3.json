@@ -1,0 +1,6 @@
+{
+  "criterion": 3,
+  "name": "Latency bounded",
+  "passed": false,
+  "evidence": "p50 35.0 ms (gate < 40), p99 63.4 ms (gate < 500), Tier 2 firing 0.0% (gate 2\u20135%), over 1000 requests"
+}
