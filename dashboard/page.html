@@ -150,9 +150,11 @@ section.block{padding:92px 0}
 .pipe-arrow{color:#a2a8bd}
 .result-placeholder{display:grid;place-items:center;min-height:290px;text-align:center;color:var(--muted)}
 .result-placeholder strong{display:block;color:var(--ink);font-size:20px;margin-bottom:8px}
+.elapsed{display:block;margin-top:14px;color:var(--indigo-dark);font:800 30px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.03em}
+.elapsed-note{display:block;margin-top:6px;font-size:12px}
 .live-result-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
 .live-reply{padding:18px 20px;border-radius:14px;background:var(--ink);color:white;line-height:1.6}
-.live-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:15px}
+.live-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:9px;margin-top:15px}
 .live-metric{padding:12px;border:1px solid var(--line);border-radius:12px;background:white}
 .live-metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.05em}
 .live-metric strong{display:block;margin-top:4px;font-size:14px}
@@ -409,6 +411,7 @@ let mode = "release";
 let caseIndex = 0;
 let liveScenario = 0;
 let liveMode = "adaptive";
+let liveTimer = null;
 
 function renderProof(data){
   const split=data.split, earned=data.earned;
@@ -501,7 +504,10 @@ async function runLive(){
   const scenario=state.live_scenarios[liveScenario];
   const button=document.getElementById("run-live");
   button.disabled=true;button.textContent="DeepSeek is responding…";
-  document.getElementById("lab-result").innerHTML=pipeline(0,-1,liveMode==="deep")+'<div class="result-placeholder"><div><strong>Fresh response in progress</strong>The server is generating structured claims and an action now.</div></div>';
+  document.getElementById("lab-result").innerHTML=pipeline(0,-1,liveMode==="deep")+'<div class="result-placeholder"><div><strong>Live request in flight</strong>DeepSeek is writing the reply. Vouch scores it, prices the action and routes it the moment the reply lands.<span class="elapsed" id="live-elapsed">0.0s</span><span class="elapsed-note">One request, recorded without a cut.</span></div></div>';
+  const startedAt=performance.now();
+  clearInterval(liveTimer);
+  liveTimer=setInterval(()=>{const el=document.getElementById("live-elapsed");if(el)el.textContent=((performance.now()-startedAt)/1000).toFixed(1)+"s";},100);
   try{
     const response=await fetch("/api/live/evaluate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({scenario_id:scenario.scenario_id,policy_mode:liveMode})});
     const payload=await response.json();
@@ -522,12 +528,13 @@ async function runLive(){
         <div class="live-metric"><span>Proposed action</span><strong>${safe(actionLabel)}${payload.action.amount_paise?` · ${money(payload.action.amount_paise/100)}`:""}</strong></div>
         <div class="live-metric"><span>Error probability</span><strong>${percent(d.p_wrong)}</strong></div>
         <div class="live-metric"><span>Expected loss / budget</span><strong>${money(d.expected_loss)} / ${money(d.budget)}</strong></div>
+        <div class="live-metric"><span>Model generation</span><strong>${(Number(payload.generation_ms)/1000).toFixed(1)} s</strong></div>
         <div class="live-metric"><span>Control latency</span><strong>${Number(d.latency_ms).toFixed(0)} ms</strong></div>
       </div>
       <p class="route-banner"><b>${providerResult}.</b> ${safe(d.reason)}</p>`;
   }catch(error){
     document.getElementById("lab-result").innerHTML=`${pipeline(-1,-1,liveMode==="deep")}<div class="live-error"><b>Live run did not complete.</b><br>${safe(error.message)}</div>`;
-  }finally{renderLiveControls();}
+  }finally{clearInterval(liveTimer);liveTimer=null;renderLiveControls();}
 }
 
 function renderProfiles(active=0){
